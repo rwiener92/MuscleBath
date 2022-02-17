@@ -33,7 +33,8 @@ y_est = polyval(c, intpdat(1:strain_range_index,1));%error
 
 
 % Plot orginal, interpolated, and curve fits
-plot(xq(1:strain_range_index),vq1(1:strain_range_index),'--','LineWidth',3);
+plot(Ringdat_SSsigep_RR_avg(:,1), Ringdat_SSsigep_RR_avg(:,2), 'ko','LineWidth',1.5)
+hold on; plot(xq(1:strain_range_index),vq1(1:strain_range_index),'--','LineWidth',3);
 hold on; plot(intpdat(1:strain_range_index,1), y_est,'k','LineWidth',1.5)
 ylabel('Stress σ [kPa]');
 xlabel('Strain ε');

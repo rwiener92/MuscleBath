@@ -48,6 +48,7 @@ xlim([0, strain_range])
 end
 
 
+% Instead of this preprocessing only use final tissue stretch [UTSS]
 function foo
 %%% Preprocessing of RR runs into averaged tissue data
 % SSsigep_RR_avg:

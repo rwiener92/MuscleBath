@@ -1,5 +1,5 @@
 
-% store as [_SSsigep_RR_avg_interp, _SSsigep_RR_avg_c, _SSsigep_RR_avg_yest]
+% store as [_SSsigep_UTSS_interp, _SSsigep_UTSS_c, _SSsigep_UTSS_yest]
 function [intpdat, c, y_est] = FMD_sigep_fitting(Ringdat_SSsigep_UTSS)
 %%% ============================ %%%
 % add function description/summary

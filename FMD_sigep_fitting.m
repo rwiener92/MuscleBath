@@ -1,6 +1,6 @@
 
 % store as [_SSsigep_RR_avg_interp, _SSsigep_RR_avg_c, _SSsigep_RR_avg_yest]
-function [intpdat, c, y_est] = FMD_sigep_fitting(Ringdat_SSsigep_RR_avg)
+function [intpdat, c, y_est] = FMD_sigep_fitting(Ringdat_SSsigep_UTSS)
 %%% ============================ %%%
 % add function description/summary
 % include what each graph shows and how their output is calculated
@@ -10,9 +10,9 @@ function [intpdat, c, y_est] = FMD_sigep_fitting(Ringdat_SSsigep_RR_avg)
 %========================================
 
 %%% INTERPOLATE stress-strain data from sigep_RR_avg output in 5% strain intervals
-x = Ringdat_SSsigep_RR_avg(:,1);
-v = Ringdat_SSsigep_RR_avg(:,2);
-xq = [0:0.05:Ringdat_SSsigep_RR_avg(end,1)];
+x = Ringdat_SSsigep_UTSS(:,1);
+v = Ringdat_SSsigep_UTSS(:,2);
+xq = [0:0.05:Ringdat_SSsigep_UTSS(end,1)];
 vq1 = interp1(x,v,xq, 'linear'); %default='linear', also try 'spline' or 'cubic'
 %use this to plot original and interpolated data
 %plot(x,v,'o',xq,vq1,':.');
@@ -33,7 +33,7 @@ y_est = polyval(c, intpdat(1:strain_range_index,1));%error
 
 
 % Plot orginal, interpolated, and curve fits
-plot(Ringdat_SSsigep_RR_avg(:,1), Ringdat_SSsigep_RR_avg(:,2), 'ko','LineWidth',1.5)
+plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5)
 hold on; plot(xq(1:strain_range_index),vq1(1:strain_range_index),'--','LineWidth',3);
 hold on; plot(intpdat(1:strain_range_index,1), y_est,'k','LineWidth',1.5)
 ylabel('Stress σ [kPa]');

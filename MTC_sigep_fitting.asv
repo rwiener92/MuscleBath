@@ -29,7 +29,7 @@ intpdat = horzcat(xq, vq1);
 %Fit line to data segments
 strain_range = [0, 1.200]; % set strain range (e.g. to 150% strain_range=1.500)
 intpdat(:,1) = round(intpdat(:,1),3); %round intpdat(strain) to 3 decimals for integer
-strain_range_index = [ find( intpdat(:,1) == strain_range(1) ), find( intpdat(:,1) == strain_range(2) ) ];
+strain_range_index = [ find( intpdat(:,1) == strain_range(1) ), find( roundintpdat(:,1) == strain_range(2) ,2) ) ];
 [c, S] = polyfit(intpdat(strain_range_index(1):strain_range_index(2) ,1), intpdat(strain_range_index(1):strain_range_index(2) ,2), 1); %1=first order (y=mx+b)
 y_est = polyval(c, intpdat(1:strain_range_index,1));%error
 

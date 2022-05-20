@@ -15,7 +15,7 @@ v = Ringdat_SSsigep_UTSS(:,2);
 xq = [0:0.05:Ringdat_SSsigep_UTSS(end,1)];
 vq1 = interp1(x,v,xq, 'linear'); %default='linear', also try 'spline' or 'cubic'
 %use this to plot original and interpolated data
-%plot(x,v,'o',xq,vq1,':.');
+%figure; plot(x,v,'o',xq,vq1,':.');
 %
 xq = xq';
 vq1 = vq1';

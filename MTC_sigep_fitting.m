@@ -49,22 +49,3 @@ xlabel('Strain ε');
 
 end
 
-
-% Instead of this preprocessing only use final tissue stretch [UTSS]
-function foo
-%%% Preprocessing of RR runs into averaged tissue data
-% SSsigep_RR_avg:
-% col_1: strain_AVG
-% col_2: stress_AVG
-% col_3: strain_STDEV
-% col_4: stress_STDEV
-%
-%%% Change to desired prefix (tissue ID)
-for i = 1:length(KO_30_SSsigep_RR1)
-    KO_30_SSsigep_RR_avg(i,1) = mean([KO_30_SSsigep_RR1(i,1), KO_30_SSsigep_RR2(i,1), KO_30_SSsigep_RR3(i,1)]);
-    KO_30_SSsigep_RR_avg(i,2) = mean([KO_30_SSsigep_RR1(i,2), KO_30_SSsigep_RR2(i,2), KO_30_SSsigep_RR3(i,2)]);
-    KO_30_SSsigep_RR_avg(i,3) = std([KO_30_SSsigep_RR1(i,1), KO_30_SSsigep_RR2(i,1), KO_30_SSsigep_RR3(i,1)]);
-    KO_30_SSsigep_RR_avg(i,4) = std([KO_30_SSsigep_RR1(i,2), KO_30_SSsigep_RR2(i,2), KO_30_SSsigep_RR3(i,2)]);
-end
-
-end

@@ -38,10 +38,8 @@ y_est = polyval(c, intpdat(strain_range_index(1):strain_range_index(2), 1));%err
 figure; plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5)
 hold on; plot( xq(strain_range_index(1):strain_range_index(2)), vq1(strain_range_index(1):strain_range_index(2)), '--','LineWidth',3);
 hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est, 'k','LineWidth',1.5)
-ylabel('Stress σ [kPa]');
-xlabel('Strain ε');
-%ylim([0, 10])
-%xlim([ ])
+xlabel('Strain ε'); ylabel('Stress σ [kPa]');
+%xlim([ ]); ylim([0, 10])
 
 
 %%% modify RR_avg fits to include various strain ranges

@@ -6,7 +6,7 @@ function [intpdat, c, y_est] = MTC_sigep_fitting(Ringdat_SSsigep_UTSS)
 % include what each graph shows and how their output is calculated
 % ref inputs and returns
 
-%%%% Robert J. Wiener (c) Oct. 2021 %%%%
+%%%% Robert J. Wiener (c) Oct. 1, 2021 %%%%
 %========================================
 
 %%% INTERPOLATE stress-strain data from sigep_RR_avg output in 5% strain intervals

@@ -25,7 +25,7 @@ intpdat = horzcat(xq, vq1);
 %%% FITTING THE STRESS_STRAIN DATA
 %Polynomial fit to calculated data ranges
 %Fit curve to multiple data segments for stiffness interpretation
-strain_range = [0.100, 0.900]; % set strain range (e.g. 150% strain_range=1.500)
+strain_range = [0.150, 0.800]; % set strain range (e.g. 150% strain_range=1.500)
 intpdat(:,1) = round(intpdat(:,1),3); %round intpdat(strain) to 3 decimals for integer
 strain_range_index = [ find( intpdat(:,1) == strain_range(1) ), find( intpdat(:,1) == strain_range(2) ) ];
 

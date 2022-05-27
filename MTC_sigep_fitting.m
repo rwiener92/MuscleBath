@@ -22,32 +22,39 @@ intpdat = horzcat(xq, vq1);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% YOUNGS MODULUS E
-%Linear regression for polynomial fit to calculated data ranges
-%Fit line to data segments
-strain_range = [0.450, 0.850]; % set strain range (e.g. 150% strain_range=1.500)
+%%% FITTING THE STRESS_STRAIN DATA
+%Polynomial fit to calculated data ranges
+%Fit curve to multiple data segments for stiffness interpretation
+strain_range = [0.100, 0.900]; % set strain range (e.g. 150% strain_range=1.500)
 intpdat(:,1) = round(intpdat(:,1),3); %round intpdat(strain) to 3 decimals for integer
 strain_range_index = [ find( intpdat(:,1) == strain_range(1) ), find( intpdat(:,1) == strain_range(2) ) ];
-%Linear fit means c(1) is slope/stiffness
-[c, S] = polyfit(intpdat(strain_range_index(1):strain_range_index(2) ,1), intpdat(strain_range_index(1):strain_range_index(2) ,2), 1); %1=first order (y=mx+b)
-y_est = polyval(c, intpdat(strain_range_index(1):strain_range_index(2), 1));%error
+
+%Linear fit "polyfit(~,~,1)" means p(1) is slope/stiffness(m)
+[p, S] = polyfit(intpdat(strain_range_index(1):strain_range_index(2) ,1), intpdat(strain_range_index(1):strain_range_index(2) ,2), 2); %1=first order (y=mx+b)
+[y_est, delta] = polyval(p, intpdat(strain_range_index(1):strain_range_index(2), 1), S); %polyfit y_estimates & CI
+%Calculare R2 error
+SSR = sum( ( vq1(strain_range_index(1):strain_range_index(2)) - y_est ) .^2);
+SST = sum( ( vq1(strain_range_index(1):strain_range_index(2)) - mean(vq1(strain_range_index(1):strain_range_index(2))) ) .^2);
+R2 = 1 - (SSR/SST);
+
 %find peaks, first local max = yield stress (Y_stress)
 [pks, pks_loc] = findpeaks(Ringdat_SSsigep_UTSS(:,2),Ringdat_SSsigep_UTSS(:,1));
 Y_stress = pks(1); %yield stress (kPa)
 Y_strain = pks_loc(1); %yield strain
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
 
 %%%% PLOTTING %%%%
-% Plot orginal, interpolated, curve fits, and local peaks
+% Plot orginal, interpolated, curve fits + CI, and local peaks
 figure; plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5)
 hold on; plot( xq(strain_range_index(1):strain_range_index(2)), vq1(strain_range_index(1):strain_range_index(2)), '--','LineWidth',3);
 hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est, 'k','LineWidth',1.5)
+%hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est+2*delta, 'k--', intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est-2*delta, 'k--' ) %plot 95% CI
 hold on; findpeaks(Ringdat_SSsigep_UTSS(:,2),Ringdat_SSsigep_UTSS(:,1));
 xlabel('Strain ε'); ylabel('Stress σ [kPa]');
 %xlim([ ]); ylim([0, 10])
-
 
 
 
@@ -55,10 +62,12 @@ xlabel('Strain ε'); ylabel('Stress σ [kPa]');
 % Store Data
 data_cell{1,1} = 'original data'; data_cell{2,1} = Ringdat_SSsigep_UTSS;
 data_cell{1,2} = 'interpolated data'; data_cell{2,2} = intpdat;
-data_cell{1,3} = 'lin_slope'; data_cell{2,3} = c(1);
-data_cell{1,4} = 'lin_y_est'; data_cell{2,4} = y_est;
-data_cell{1,5} = 'yield stress'; data_cell{2,5} = Y_stress;
-data_cell{1,6} = 'yield strain'; data_cell{2,6} = Y_strain;
+data_cell{1,3} = 'p_polyfits'; data_cell{2,3} = p;
+data_cell{1,4} = 'y_est'; data_cell{2,4} = y_est;
+data_cell{1,5} = 'R2'; data_cell{2,5} = R2;
+data_cell{1,6} = 'delta_CI'; data_cell{2,6} = delta;
+data_cell{1,7} = 'yield stress'; data_cell{2,7} = Y_stress;
+data_cell{1,8} = 'yield strain'; data_cell{2,8} = Y_strain;
 %%% Try fits for various strain ranges
 %%% Try alternate fits for UTSS data
 end

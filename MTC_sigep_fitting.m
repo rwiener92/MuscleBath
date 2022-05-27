@@ -68,7 +68,14 @@ data_cell{1,5} = 'R2'; data_cell{2,5} = R2;
 data_cell{1,6} = 'delta_CI'; data_cell{2,6} = delta;
 data_cell{1,7} = 'yield stress'; data_cell{2,7} = Y_stress;
 data_cell{1,8} = 'yield strain'; data_cell{2,8} = Y_strain;
-%%% Try fits for various strain ranges
-%%% Try alternate fits for UTSS data
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  MODIFICATION IDEAS  %%%
+% Try Lo/Hi poly fit regions
+% Try basing strain_range off Y_stress
+% Try higher order polyfits for UTSS data
+
 end
 

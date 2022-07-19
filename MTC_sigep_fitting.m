@@ -19,7 +19,8 @@ vq1 = interp1(x,v,xq, 'linear'); %default='linear', also try 'spline' or 'cubic'
 xq = xq';
 vq1 = vq1';
 intpdat = horzcat(xq, vq1);
-
+%shift interpolated data to stress starting at 0 for comparing power fits
+intpdat(:,2) = intpdat(:,2) - intpdat(1,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% FITTING THE STRESS_STRAIN DATA

@@ -49,10 +49,11 @@ Y_strain = pks_loc(1); %yield strain
 
 %%%% PLOTTING %%%%
 % Plot orginal, interpolated, curve fits + CI, and local peaks
-figure; plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5)
-hold on; plot( xq(strain_range_index(1):strain_range_index(2)), vq1(strain_range_index(1):strain_range_index(2)), '--','LineWidth',3);
-hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est, 'k','LineWidth',1.5)
-%hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est+2*delta, 'k--', intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est-2*delta, 'k--' ) %plot 95% CI
+figure; plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5 ); %original
+hold on; plot( xq(strain_range_index(1):strain_range_index(2)), vq1(strain_range_index(1):strain_range_index(2)) ); %interpolated
+hold on; plot( intpdat((strain_range_index(1):strain_range_index(2)), 1), intpdat((strain_range_index(1):strain_range_index(2)), 2), 'r--','LineWidth',4 ); %zero_interpolated
+hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est, 'k','LineWidth',1.5 ); %fit
+%hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est+2*delta, 'k--', intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est-2*delta, 'k--' ); %95_CI
 hold on; findpeaks(Ringdat_SSsigep_UTSS(:,2),Ringdat_SSsigep_UTSS(:,1));
 xlabel('Strain ε'); ylabel('Stress σ [kPa]');
 %xlim([ ]); ylim([0, 10])

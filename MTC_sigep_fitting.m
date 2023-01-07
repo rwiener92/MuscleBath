@@ -67,7 +67,7 @@ xlabel('Strain ε'); ylabel('Stress σ [kPa]');
 % Store Data
 data_cell{1,1} = 'original data'; data_cell{2,1} = Ringdat_SSsigep_UTSS;
 data_cell{1,2} = 'interpolated data'; data_cell{2,2} = intpdat;
-data_cell{1,3} = 'p_polyfits'; data_cell{2,3} = p;
+data_cell{1,3} = 'p_polyfits [0.300, 0.650]'; data_cell{2,3} = p;
 data_cell{1,4} = 'y_est'; data_cell{2,4} = y_est;
 data_cell{1,5} = 'R2'; data_cell{2,5} = R2;
 data_cell{1,6} = 'delta_CI'; data_cell{2,6} = delta;

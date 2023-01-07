@@ -8,7 +8,10 @@ function data_cell = MTC_sigep_fitting(Ringdat_SSsigep_UTSS)
 %%%% Robert J. Wiener (c) Oct. 1, 2021 %%%%
 %========================================
 
-%%% INTERPOLATE stress-strain data from sigep_RR_avg output in 1% strain intervals
+% Load data from MTC_Analysis_LiveFunc() output and take only SSsigep_UTSS
+Ringdat_SSsigep_UTSS = Ringdat_SSsigep_UTSS{2,7};
+
+%%% INTERPOLATE stress-strain data from UTSS in 1% strain intervals
 Ringdat_SSsigep_UTSS(end-1:end,:) = []; %interp error, end of broken tissue reads non-unique strain values
 x = Ringdat_SSsigep_UTSS(:,1);
 v = Ringdat_SSsigep_UTSS(:,2);

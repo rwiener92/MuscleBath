@@ -1,68 +1,83 @@
-
-% store as [_SSsigep_UTSS_interp, _SSsigep_UTSS_c, _SSsigep_UTSS_yest]
-function [intpdat, c, y_est] = FMD_sigep_fitting(Ringdat_SSsigep_UTSS)
+function data_cell = FMD_sigep_fitting(Ringdat_SSsigep_UTSS)
+%        WT_T2_data_cell = MTC_sigep_fitting(WT_T2_UTSS)
 %%% ============================ %%%
 % add function description/summary
 % include what each graph shows and how their output is calculated
 % ref inputs and returns
-
-%%%% Robert J. Wiener (c) Oct. 2021 %%%%
+%
+%%%% Robert J. Wiener (c) Oct. 1, 2021 %%%%
 %========================================
 
-%%% INTERPOLATE stress-strain data from sigep_RR_avg output in 5% strain intervals
+%%% INTERPOLATE stress-strain data from UTSS in 1% strain intervals
+Ringdat_SSsigep_UTSS(end-1:end,:) = []; %interp error, end of broken tissue reads non-unique strain values
 x = Ringdat_SSsigep_UTSS(:,1);
 v = Ringdat_SSsigep_UTSS(:,2);
-xq = [0:0.05:Ringdat_SSsigep_UTSS(end,1)];
+xq = [0:0.01:Ringdat_SSsigep_UTSS(end,1)];
 vq1 = interp1(x,v,xq, 'linear'); %default='linear', also try 'spline' or 'cubic'
 %use this to plot original and interpolated data
 %figure; plot(x,v,'o',xq,vq1,':.');
-%
 xq = xq';
 vq1 = vq1';
 intpdat = horzcat(xq, vq1);
-
+%shift interpolated data to stress starting at 0 for comparing power fits
+intpdat(:,2) = intpdat(:,2) - intpdat(1,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% YOUNGS MODULUS E
-%Linear regression for polynomial fit to calculated data ranges
-%Fit line to data segments
-strain_range = 1.5; % set strain range (e.g. to 150% strain_range=1.5)
-strain_range_index = find(abs(intpdat(:,1) - strain_range)<=0.001);
-[c, S] = polyfit(intpdat(1:strain_range_index,1), intpdat(1:strain_range_index,2), 1); %1=first order (y=mx+b)
-y_est = polyval(c, intpdat(1:strain_range_index,1));%error
+%%% FITTING THE STRESS_STRAIN DATA
+%Polynomial fit to calculated data ranges
+%Fit curve to multiple data segments for stiffness interpretation
+strain_range = [0.500, 2.500]; % set strain range (e.g. 150% strain_range=1.500)
+intpdat(:,1) = round(intpdat(:,1),3); %round intpdat(strain) to 3 decimals for integer
+strain_range_index = [ find( intpdat(:,1) == strain_range(1) ), find( intpdat(:,1) == strain_range(2) ) ];
+
+%Linear fit "polyfit(~,~,1)" means p(1) is slope/stiffness(m)
+[p, S] = polyfit(intpdat(strain_range_index(1):strain_range_index(2) ,1), intpdat(strain_range_index(1):strain_range_index(2) ,2), 2); %1=first order (y=mx+b)
+[y_est, delta] = polyval(p, intpdat(strain_range_index(1):strain_range_index(2), 1), S); %polyfit y_estimates & CI
+%Calculare R2 error
+SSR = sum( ( vq1(strain_range_index(1):strain_range_index(2)) - y_est ) .^2);
+SST = sum( ( vq1(strain_range_index(1):strain_range_index(2)) - mean(vq1(strain_range_index(1):strain_range_index(2))) ) .^2);
+R2 = 1 - (SSR/SST);
+
+%find peaks, first local max = yield stress (Y_stress)
+[pks, pks_loc] = findpeaks(Ringdat_SSsigep_UTSS(:,2),Ringdat_SSsigep_UTSS(:,1));
+Y_stress = pks(1); %yield stress (kPa)
+Y_strain = pks_loc(1); %yield strain
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Plot orginal, interpolated, and curve fits
-plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5)
-hold on; plot(xq(1:strain_range_index),vq1(1:strain_range_index),'--','LineWidth',3);
-hold on; plot(intpdat(1:strain_range_index,1), y_est,'k','LineWidth',1.5)
-ylabel('Stress σ [kPa]');
-xlabel('Strain ε');
-ylim([0, 200])
-xlim([0, strain_range])
 
 
-%%% modify RR_avg fits to include various strain ranges
-%%% include other fits for UTSS data
+%%%% PLOTTING %%%%
+% Plot orginal, interpolated, curve fits + CI, and local peaks
+figure; plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5 ); %original
+hold on; plot( xq(strain_range_index(1):strain_range_index(2)), vq1(strain_range_index(1):strain_range_index(2)) ); %interpolated
+hold on; plot( intpdat((strain_range_index(1):strain_range_index(2)), 1), intpdat((strain_range_index(1):strain_range_index(2)), 2), 'r--','LineWidth',4 ); %zero_interpolated
+hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est, 'k','LineWidth',1.5 ); %fit
+%hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est+2*delta, 'k--', intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est-2*delta, 'k--' ); %95_CI
+hold on; findpeaks(Ringdat_SSsigep_UTSS(:,2),Ringdat_SSsigep_UTSS(:,1));
+xlabel('Strain ε'); ylabel('Stress σ [kPa]');
+%xlim([ ]); ylim([0, 10])
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Store Data
+data_cell{1,1} = 'original data'; data_cell{2,1} = Ringdat_SSsigep_UTSS;
+data_cell{1,2} = 'interpolated data'; data_cell{2,2} = intpdat;
+data_cell{1,3} = 'p_polyfits [0.500, 2.500]'; data_cell{2,3} = p;
+data_cell{1,4} = 'y_est'; data_cell{2,4} = y_est;
+data_cell{1,5} = 'R2'; data_cell{2,5} = R2;
+data_cell{1,6} = 'delta_CI'; data_cell{2,6} = delta;
+data_cell{1,7} = 'yield stress'; data_cell{2,7} = Y_stress;
+data_cell{1,8} = 'yield strain'; data_cell{2,8} = Y_strain;
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  MODIFICATION IDEAS  %%%
+% Try Lo/Hi poly fit regions
+% Try basing strain_range off Yield_stress
+% Try higher order polyfits for UTSS data
 
 end
 
-
-% Instead of this preprocessing only use final tissue stretch [UTSS]
-function foo
-%%% Preprocessing of RR runs into averaged tissue data
-% SSsigep_RR_avg:
-% col_1: strain_AVG
-% col_2: stress_AVG
-% col_3: strain_STDEV
-% col_4: stress_STDEV
-%
-%%% Change to desired prefix (tissue ID)
-for i = 1:length(KO_30_SSsigep_RR1)
-    KO_30_SSsigep_RR_avg(i,1) = mean([KO_30_SSsigep_RR1(i,1), KO_30_SSsigep_RR2(i,1), KO_30_SSsigep_RR3(i,1)]);
-    KO_30_SSsigep_RR_avg(i,2) = mean([KO_30_SSsigep_RR1(i,2), KO_30_SSsigep_RR2(i,2), KO_30_SSsigep_RR3(i,2)]);
-    KO_30_SSsigep_RR_avg(i,3) = std([KO_30_SSsigep_RR1(i,1), KO_30_SSsigep_RR2(i,1), KO_30_SSsigep_RR3(i,1)]);
-    KO_30_SSsigep_RR_avg(i,4) = std([KO_30_SSsigep_RR1(i,2), KO_30_SSsigep_RR2(i,2), KO_30_SSsigep_RR3(i,2)]);
-end
-
-end

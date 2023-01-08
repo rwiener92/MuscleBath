@@ -1,4 +1,4 @@
-function data_cell = MTC_sigep_fitting(Ringdat_SSsigep_UTSS)
+function data_cell = MTC_sigep_fitting(Original_UTSS_Data)
 %%% ====================================================================== %%%
 % This function will...
 % Take UTSS data (stress-strain) from MTC_Analysis_LiveFunc()
@@ -27,17 +27,21 @@ function data_cell = MTC_sigep_fitting(Ringdat_SSsigep_UTSS)
 %%%% Robert J. Wiener (c) Oct. 2021 %%%%
 %=========================================================================%
 
-%%%%%% OPTIONS %%%%%%
+%%%%%%%%%%%%% OPTIONS %%%%%%%%%%%%%
 interpolation_steps = 0.01;
 interpolation_type = 'linear' ;
 polynomial_order = 2;  % (1 = first order (y=mx+b))
 strain_range = [0.300, 0.650];  % set strain range (e.g. 150% strain_range=1.500) %note this has interpolation_steps
 tangent_point_strain = 0.650; % typically max strain_range (strain_range(2)), but can be e.g. 0.05
-%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Load data from MTC_Analysis_LiveFunc() output and take only SSsigep_UTSS
-Ringdat_SSsigep_UTSS = Ringdat_SSsigep_UTSS{2,7};
+% Store original data for data_cell
+Original_UTSS_Data = Original_UTSS_Data{2,7};
+% Shift interpolated data to stress starting at 0 for comparing power fits
+Ringdat_SSsigep_UTSS = Original_UTSS_Data;
+Ringdat_SSsigep_UTSS(:,2) = Original_UTSS_Data(:,2) - Original_UTSS_Data(1,2);
+
 
 %%% INTERPOLATE stress-strain data from UTSS in 1% strain intervals
 Ringdat_SSsigep_UTSS(end-1:end,:) = []; %interp error, end of broken tissue reads non-unique strain values
@@ -50,8 +54,7 @@ vq1 = interp1(x,v,xq, interpolation_type); %default='linear', also try 'spline' 
 xq = xq';
 vq1 = vq1';
 intpdat = horzcat(xq, vq1);
-%shift interpolated data to stress starting at 0 for comparing power fits
-intpdat(:,2) = intpdat(:,2) - intpdat(1,2);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% FITTING THE STRESS_STRAIN DATA %%%
@@ -108,13 +111,8 @@ tangent_intercept = -1* ( (tangent_slope*(tangent_point_strain)) - ((p(1)*(tange
 % plot tang over entire strain_range
 tang(1,1) = strain_range(1);
 tang(2,1) = strain_range(2);
-
 tang(1,2) = tangent_slope*strain_range(1) + tangent_intercept; %y=mx+b
-
 tang(2,2) = tangent_slope*strain_range(2) + tangent_intercept; %y=mx+b
-
-%tang(2,2) = (tangent_slope*(intpdat(strain_range_index(2),2)) + tangent_intercept);
-%tang(2,2) = tangent_slope*0.650 + tangent_intercept; %y=mx+b
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -136,8 +134,8 @@ xlabel('Strain ε'); ylabel('Stress σ [kPa]');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Store Data
-data_cell{1,1} = 'original data'; data_cell{2,1} = Ringdat_SSsigep_UTSS;
-data_cell{1,2} = 'interpolated data'; data_cell{2,2} = intpdat;
+data_cell{1,1} = 'original data'; data_cell{2,1} = Original_UTSS_Data;
+data_cell{1,2} = 'interpolated data (zero-shifted)'; data_cell{2,2} = intpdat;
 data_cell{1,3} = strcat('p_polyfits',mat2str(strain_range)); data_cell{2,3} = p;
 data_cell{1,4} = 'y_est'; data_cell{2,4} = y_est;
 data_cell{1,5} = 'R2'; data_cell{2,5} = R2;
@@ -147,7 +145,8 @@ data_cell{1,8} = strcat('tangent_E[',num2str(tangent_point_strain) ,']'); data_c
 data_cell{1,9} = 'yield stress'; data_cell{2,9} = Y_stress;
 data_cell{1,10} = 'yield strain'; data_cell{2,10} = Y_strain;
 
-
+%print: p1; p2; r2; secant_E; tangent_E; yield_stress; yield_strain
+disp([data_cell{2,3}(1); data_cell{2,3}(2); data_cell{2,5}; data_cell{2,7}; data_cell{2,8}; data_cell{2,9}; data_cell{2,10}])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  MODIFICATION IDEAS  %%%

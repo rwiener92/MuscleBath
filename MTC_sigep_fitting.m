@@ -143,7 +143,7 @@ data_cell{1,4} = 'y_est'; data_cell{2,4} = y_est;
 data_cell{1,5} = 'R2'; data_cell{2,5} = R2;
 data_cell{1,6} = 'delta_CI'; data_cell{2,6} = delta;
 data_cell{1,7} = strcat('secant_E',mat2str(strain_range)); data_cell{2,7} = secant_slope;
-data_cell{1,8} = strcat('tangent_E[',num2str(strain_range(2)) ,']'); data_cell{2,8} = tangent_slope;
+data_cell{1,8} = strcat('tangent_E[',num2str(tangent_point_strain) ,']'); data_cell{2,8} = tangent_slope;
 data_cell{1,9} = 'yield stress'; data_cell{2,9} = Y_stress;
 data_cell{1,10} = 'yield strain'; data_cell{2,10} = Y_strain;
 
@@ -154,6 +154,7 @@ data_cell{1,10} = 'yield strain'; data_cell{2,10} = Y_strain;
 % Try Lo/Hi poly fit regions
 % Try basing strain_range off Yield_stress
 % Try higher order polyfits for UTSS data
+% Integrate data to find AOC
 
 end
 

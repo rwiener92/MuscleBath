@@ -205,6 +205,7 @@ data_cell{1,13} = 'yield strain'; data_cell{2,13} = Y_strain;
 
 
 %print: p1; p2; p3, r2; secant_E; tangent_E_1; tangent_E_2; AOC_over_strain_range; yield_stress; yield_strain
+format shortG
 disp([data_cell{2,4}(1); data_cell{2,4}(2); data_cell{2,4}(3);...
  data_cell{2,6}; data_cell{2,8}; data_cell{2,9}; data_cell{2,10}; data_cell{2,11}; data_cell{2,12}; data_cell{2,13}])
 

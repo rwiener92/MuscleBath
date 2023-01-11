@@ -37,8 +37,8 @@ function data_cell = MTC_sigep_fitting(Original_UTSS_Data)
 interpolation_steps = 0.001; %should be around 1/100 of motor_step_size
 interpolation_type = 'linear' ;
 polynomial_order = 2;  % ( 2=second order: y=p(1)x^2+p(2)x+p(3) )
-strain_range = [0.300, 0.650];  % set strain range (e.g. 150% strain_range=1.500) %note this has interpolation_steps
-tangent_point_strain_1 = 0.650; % typically max strain_range (strain_range(2)), but can be e.g. 0.05
+strain_range = [0.30, 0.65];  % set strain range (e.g. 150% strain_range=1.500) %note this has interpolation_steps
+tangent_point_strain_1 = strain_range(2); % typically max strain_range (strain_range(2)), but can be e.g. 0.05
 tangent_point_strain_2 = median(strain_range); %try defining as middle of strain_range
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

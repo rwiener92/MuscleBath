@@ -86,6 +86,8 @@ Y_strain = pks_loc(1); %yield strain
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%  CACULATE MODULI  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% CALCULATE SECANT MODULUS FROM STRAIN_RANGE %%%
 % Slope of line defined by (y2-y1)/(x2-x1)
 % Use this matrix for plotting
@@ -135,10 +137,12 @@ tang_2(2,1) = strain_range(2);
 tang_2(1,2) = tangent_slope_2*strain_range(1) + tangent_intercept_2; %y=mx+b
 tang_2(2,2) = tangent_slope_2*strain_range(2) + tangent_intercept_2; %y=mx+b
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% CALCULATE STRAIN ENERGY FROM POLY_FIT ACROSS STRAIN_RANGE %%%
+
 %syms Fstrain x % redundant this is initialized in TANGENT
 %Fstrain = @(x) (p(1))*x.^2 + (p(2))*x + (p(3));
 
@@ -147,21 +151,18 @@ tang_2(2,2) = tangent_slope_2*strain_range(2) + tangent_intercept_2; %y=mx+b
 % A = integral (Fx, Xminimum, Xmaximum)
 AOC_over_strain_range = integral(Fstrain, strain_range(1), strain_range(2)); %for our quadratic this in incorrect because it doesnt fit to zero
 
-% gives the area under the curve represented by ‘y’. Here ‘x’ is used to define the range or limits between which we want the area.
+% This gives the area under the curve represented by ‘y’. Here ‘x’ is used to define the range or limits between which we want the area.
 % A = trapz (x, y)
-
-% [x = 0 : 100, will be equivalent to Xminimum = 0 &Xmaximum = 100]
-% A = cumtrapz (x, y) will compute the cumulative integration of Y wrt X. This is done using the trapezoidal integration and can be used to calculate the area under the curve for a portion.
-
-
-% plot area of AOC (strain_range)
+% A = cumtrapz (x, y) will compute the cumulative integration of Y wrt X.
+% This is done using the trapezoidal integration and can be used to calculate the area under the curve for a portion.
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% PLOTTING %%%%
-% Plot orginal, interpolated, curve fits + CI, and local peaks
-figure; plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5 ); %original
+% Plot orginal, interpolated, curve fits + CI, local peaks, etc.
+figure;
+plot(Ringdat_SSsigep_UTSS(:,1), Ringdat_SSsigep_UTSS(:,2), 'ko','LineWidth',1.5 ); %original
 hold on; plot( xq(strain_range_index(1):strain_range_index(2)), vq1(strain_range_index(1):strain_range_index(2)) ); %interpolated
 hold on; plot( intpdat((strain_range_index(1):strain_range_index(2)), 1), intpdat((strain_range_index(1):strain_range_index(2)), 2), 'r--','LineWidth',4 ); %zero_interpolated
 hold on; plot( intpdat(strain_range_index(1):strain_range_index(2) ,1), y_est, 'k','LineWidth',1.5 ); %fit
@@ -170,7 +171,16 @@ hold on; findpeaks(Ringdat_SSsigep_UTSS(:,2),Ringdat_SSsigep_UTSS(:,1));
 hold on; plot(sec(:,1), sec(:,2), 'b-', 'LineWidth',1.5 ); %secant
 hold on; plot(tang_1(:,1), tang_1(:,2), 'b-', 'LineWidth',1.5 ); %tangent_1
 hold on; plot(tang_2(:,1), tang_2(:,2), 'b-', 'LineWidth',1.5 ); %tangent_2
-% plot area of AOC (strain_range)
+
+hold on; % plot area of AOC (strain_range)
+% area(x, y) % where y is Fstrain(x) func
+% AOC_x is index of interpolated data at strain ranges
+AOC_x = [ intpdat( strain_range_index(1):strain_range_index(2),  1) ]; 
+FA1 = area(AOC_x, (p(1))*AOC_x.^2 + (p(2))*AOC_x + (p(3))) ;
+FA1.FaceAlpha = 0.2;
+FA1.EdgeAlpha = 0;
+
+% Detail Plot %
 xlabel('Strain ε'); ylabel('Stress σ [kPa]');
 %xlim([ ]);
 ylim([ 0, max(intpdat(:,2))+max(intpdat(:,2))*0.1 ])
